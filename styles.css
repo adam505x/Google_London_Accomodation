@@ -409,10 +409,10 @@ input[type=date]:focus { outline: 2px solid var(--blue); border-color: transpare
 }
 
 /* ═══════════════════════ POPUP ═══════════════════════ */
-.leaflet-popup-content-wrapper { border-radius: var(--radius) !important; box-shadow: var(--shadow-md) !important; padding: 0 !important; max-height: 480px !important; overflow: hidden !important; }
-.leaflet-popup-content { margin: 0 !important; max-height: 480px !important; overflow-y: auto !important; }
+.leaflet-popup-content-wrapper { border-radius: var(--radius) !important; box-shadow: var(--shadow-md) !important; padding: 0 !important; max-height: 420px !important; overflow: hidden !important; }
+.leaflet-popup-content { margin: 0 !important; max-height: 420px !important; overflow-y: auto !important; }
 
-.popup-content   { padding: 13px 15px; min-width: 240px; }
+.popup-content   { padding: 10px 13px; min-width: 210px; }
 .popup-toprow    { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; margin-bottom: 3px; }
 .popup-name      { font-size: 14px; font-weight: 700; color: var(--grey-900); line-height: 1.3; }
 .popup-fav       { background: none; border: none; font-size: 20px; cursor: pointer; line-height: 1; color: var(--grey-400); padding: 0 2px; transition: color .15s; flex-shrink: 0; }
@@ -443,7 +443,7 @@ input[type=date]:focus { outline: 2px solid var(--blue); border-color: transpare
 .popup-note-input {
   width: 100%; font-size: 12px; border: 1px solid var(--grey-200); border-radius: 5px;
   padding: 5px 7px; resize: vertical; font-family: inherit; color: var(--grey-900);
-  transition: border-color .15s; min-height: 90px;
+  transition: border-color .15s; min-height: 60px;
 }
 .popup-note-input:focus { outline: none; border-color: var(--blue); }
 

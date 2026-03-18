@@ -453,19 +453,20 @@ function buildPopup(acc) {
       <div class="popup-note-label" style="margin-top:8px">🏠 Room type / options</div>
       <input class="popup-roomtype-input" id="roomtype-${acc.id}" value="${esc(det.roomType)}" placeholder="e.g. En-suite, studio, shared kitchen…" />
       <div class="popup-note-label" style="margin-top:8px">📝 My notes</div>
-      <textarea class="popup-note-input" id="note-${acc.id}" rows="5" placeholder="Pricing details, pros/cons, room sizes, transport times…">${esc(det.note)}</textarea>
+      <textarea class="popup-note-input" id="note-${acc.id}" rows="3" placeholder="Pricing details, pros/cons, room sizes, transport times…">${esc(det.note)}</textarea>
       <button class="popup-note-save" onclick="saveDetailsFromPopup(${acc.id})">Save</button>
     </div>
 
     <div class="popup-actions">
       <button class="popup-dismiss ${isDis?'is-dismissed':''}" onclick="toggleDismiss(${acc.id})">${isDis?'↩ Restore':'✗ Not interested'}</button>
       <button class="card-btn-edit" onclick="openEditModal(${acc.id})">✏ Edit</button>
-      <button class="popup-delete" onclick="deleteAccommodation(${acc.id})">🗑 Delete for all</button>
+      <button class="popup-note-save" onclick="saveDetailsFromPopup(${acc.id})">Save</button>
     </div>
   </div>`;
 }
 
 function renderMarkers(filtered) {
+  const openId = Object.keys(markers).find(id => markers[id].isPopupOpen());
   Object.values(markers).forEach(m => map.removeLayer(m));
   markers = {};
   if (filters.type === 'none') return; // hide all dots
@@ -476,10 +477,13 @@ function renderMarkers(filtered) {
     const isDis = userState.dismissed.includes(acc.id);
     const marker = L.marker([acc.lat, acc.lng], { icon: makeIcon(acc.type, isFav, isDis) })
       .addTo(map)
-      .bindPopup(() => buildPopup(acc), { maxWidth: 320, minWidth: 280, maxHeight: 480, autoPanPadding: [20, 20] });
+      .bindPopup(() => buildPopup(acc), { maxWidth: 270, minWidth: 230, maxHeight: 420, autoPanPadding: [20, 20] });
     marker.on('click', () => highlightCard(acc.id));
     markers[acc.id] = marker;
   });
+  if (openId && markers[openId]) {
+    markers[openId].openPopup();
+  }
 }
 
 function renderCards(filtered) {

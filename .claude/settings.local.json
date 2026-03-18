@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "WebFetch(domain:www.google.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl -s \"https://www.google.com/maps/d/u/0/kml?mid=1eIjWEQyO-PchgJUttxBBkYqvPxE&forcekml=1\" -o /tmp/zones.kml)",
+      "Read(//tmp/**)",
+      "Bash(curl:*)",
+      "Bash(cp:*)",
+      "WebFetch(domain:overpass-api.de)",
+      "Read(//c/Users/Adam McIntyre/Desktop/Google_London_Accomodation/$TEMP/**)",
+      "Read(//c/Users/Adam McIntyre/Desktop/Google_London_Accomodation/$TMPDIR/**)",
+      "Read(//c//**)",
+      "Bash(npm:*)",
+      "Bash(rm:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}
