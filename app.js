@@ -460,7 +460,7 @@ function buildPopup(acc) {
     <div class="popup-actions">
       <button class="popup-dismiss ${isDis?'is-dismissed':''}" onclick="toggleDismiss(${acc.id})">${isDis?'↩ Restore':'✗ Not interested'}</button>
       <button class="card-btn-edit" onclick="openEditModal(${acc.id})">✏ Edit</button>
-      <button class="popup-note-save" onclick="saveDetailsFromPopup(${acc.id})">Save</button>
+      <button class="popup-fav ${isFav?'is-fav':''}" onclick="toggleFavourite(${acc.id})" title="${isFav?'Unfavourite':'Favourite'}">${isFav?'★':'☆'}</button>
     </div>
   </div>`;
 }
