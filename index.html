@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Accommodation – Google Kings Cross</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ── Login overlay ─────────────────────────────────────────── -->
+<div class="login-overlay hidden" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="logo-g">G</span><span class="logo-o1">o</span><span class="logo-o2">o</span><span class="logo-g2">g</span><span class="logo-l">l</span><span class="logo-e">e</span>
+    </div>
+    <h2>Accommodation Tracker</h2>
+    <p class="login-sub">Enter your name to load your saved data</p>
+    <div id="loginError" class="login-error hidden"></div>
+    <form id="loginForm" autocomplete="off">
+      <input type="text" id="loginUsername" placeholder="Your name (e.g. Adam)" maxlength="30" autofocus />
+      <button type="submit" class="btn-login">Log In →</button>
+    </form>
+    <div id="loginUserList" class="login-user-list hidden">
+      <p class="login-or">or continue as</p>
+      <div id="loginUserButtons"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Header ─────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="header-left">
+    <div class="logo">
+      <span class="logo-g">G</span><span class="logo-o1">o</span><span class="logo-o2">o</span><span class="logo-g2">g</span><span class="logo-l">l</span><span class="logo-e">e</span>
+    </div>
+    <div class="header-title">
+      <h1>Student Accommodation Tracker</h1>
+      <p>Kings Cross &amp; surrounding London zones</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="view-toggle" id="viewToggle">
+      <button class="view-btn active" id="btnMapView" onclick="setView('map')">🗺 Map</button>
+      <button class="view-btn" id="btnListView" onclick="setView('list')">📋 List</button>
+    </div>
+    <div class="user-display hidden" id="userDisplay">
+      <span class="user-label" id="currentUserLabel"></span>
+      <button class="btn-switch-user" onclick="logoutUser()" title="Switch user">⇄</button>
+    </div>
+    <button class="btn-add" id="btnAdd">+ Add</button>
+  </div>
+</header>
+
+<!-- Filter bar – row 1: accommodation filters -->
+<div class="filter-bar filter-bar-1">
+  <div class="filter-group">
+    <label>Type</label>
+    <div class="btn-group" id="typeFilter">
+      <button class="filter-btn active" data-value="all">All</button>
+      <button class="filter-btn" data-value="university">University</button>
+      <button class="filter-btn" data-value="private">Private</button>
+      <button class="filter-btn" data-value="short-term">Short-term</button>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label>Distance</label>
+    <div class="btn-group" id="distFilter">
+      <button class="filter-btn active" data-value="all">All</button>
+      <button class="filter-btn" data-value="1">&lt;1km</button>
+      <button class="filter-btn" data-value="2">&lt;2km</button>
+      <button class="filter-btn" data-value="5">&lt;5km</button>
+      <button class="filter-btn" data-value="10">&lt;10km</button>
+    </div>
+  </div>
+
+  <div class="filter-group price-group">
+    <label>Price /wk</label>
+    <div class="price-inputs">
+      <span class="price-prefix">£</span>
+      <input type="number" id="priceMin" class="price-input" min="0" max="9999" value="" placeholder="min" />
+      <span class="price-sep">–</span>
+      <input type="number" id="priceMax" class="price-input" min="0" max="9999" value="" placeholder="max" />
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label>From</label>
+    <input type="date" id="filterFrom" />
+  </div>
+
+  <div class="filter-group">
+    <label>To</label>
+    <input type="date" id="filterTo" />
+  </div>
+
+  <div class="filter-group">
+    <label>Personal</label>
+    <div class="toggle-group">
+      <label class="toggle-chip fav-chip">
+        <input type="checkbox" id="chkFavs" />
+        <span>★ Saved only</span>
+      </label>
+      <label class="toggle-chip dismiss-chip">
+        <input type="checkbox" id="chkDismissed" />
+        <span>Show dismissed</span>
+      </label>
+    </div>
+  </div>
+
+  <button class="btn-clear" id="btnClear">✕ Clear</button>
+</div>
+
+<!-- Filter bar – row 2: map overlay toggles (hidden in list view) -->
+<div class="filter-bar filter-bar-2" id="filterBar2">
+  <div class="filter-group">
+    <label>Map overlays</label>
+    <div class="toggle-group">
+      <label class="toggle-chip" id="tubeToggle">
+        <input type="checkbox" id="chkTube" />
+        <span>🚇 Tube</span>
+      </label>
+      <label class="toggle-chip zone-z1">
+        <input type="checkbox" id="chkZone1" checked />
+        <span>Zone 1</span>
+      </label>
+      <label class="toggle-chip zone-z2">
+        <input type="checkbox" id="chkZone2" checked />
+        <span>Zone 2</span>
+      </label>
+      <label class="toggle-chip zone-z3">
+        <input type="checkbox" id="chkZone3" />
+        <span>Zone 3</span>
+      </label>
+    </div>
+  </div>
+</div>
+
+<!-- ── Map + Sidebar view ──────────────────────────────────────── -->
+<div class="main-content" id="mainMapView">
+  <div class="map-wrapper">
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="legend-title">Accommodation</div>
+      <div class="legend-item"><span class="legend-dot type-university"></span> University</div>
+      <div class="legend-item"><span class="legend-dot type-private"></span> Private</div>
+      <div class="legend-item"><span class="legend-dot type-short-term"></span> Short-term</div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <span id="resultCount">Loading…</span>
+    </div>
+    <div class="card-list" id="cardList"></div>
+  </div>
+</div>
+
+<!-- ── Full List view ──────────────────────────────────────────── -->
+<div class="list-view hidden" id="mainListView">
+  <div class="list-view-header">
+    <div class="list-search-wrap">
+      <input type="text" id="listSearch" class="list-search-input" placeholder="Search by name or address…" autocomplete="off" />
+      <div class="autocomplete-dropdown hidden" id="searchDropdown"></div>
+    </div>
+    <span id="listResultCount" class="list-result-count"></span>
+    <div class="list-controls">
+      <span class="list-ctrl-label">Sort:</span>
+      <div class="btn-group sort-group" id="sortControls">
+        <button class="filter-btn sort-btn active" data-sort="price-asc">£ ↑</button>
+        <button class="filter-btn sort-btn" data-sort="price-desc">£ ↓</button>
+        <button class="filter-btn sort-btn" data-sort="rating-desc">★ ↓</button>
+        <button class="filter-btn sort-btn" data-sort="rating-asc">★ ↑</button>
+        <button class="filter-btn sort-btn" data-sort="dist-asc">📍 ↑</button>
+      </div>
+      <button class="btn-currency-toggle" id="btnCurrency" onclick="toggleCurrency()">€/mo</button>
+    </div>
+  </div>
+  <div class="list-grid" id="listGrid"></div>
+</div>
+
+<!-- ── Add Modal ──────────────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add Accommodation</h2>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div id="formError" class="form-error hidden"></div>
+
+    <!-- Google Maps quick import -->
+    <div class="import-section">
+      <label class="import-label">📍 Import from Google Maps URL</label>
+      <div class="import-row">
+        <input type="url" id="mapsImportUrl" placeholder="https://maps.app.goo.gl/…  or full Google Maps URL" />
+        <button type="button" id="btnImport" onclick="importFromMapsUrl()">Import</button>
+      </div>
+      <div id="importStatus" class="import-status"></div>
+    </div>
+
+    <form id="addForm" autocomplete="off">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Name *</label>
+          <input type="text" id="f-name" required placeholder="e.g. UCL Student Halls" />
+        </div>
+        <div class="form-group">
+          <label>Type *</label>
+          <select id="f-type" required>
+            <option value="">Select…</option>
+            <option value="university">University</option>
+            <option value="private">Private</option>
+            <option value="short-term">Short-term</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>TfL Zone *</label>
+          <select id="f-zone" required>
+            <option value="">Select…</option>
+            <option value="1">Zone 1</option>
+            <option value="2">Zone 2</option>
+            <option value="3">Zone 3</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Address</label>
+          <input type="text" id="f-address" placeholder="e.g. Bloomsbury, London" />
+        </div>
+        <div class="form-group">
+          <label>Latitude *</label>
+          <input type="number" id="f-lat" step="0.0001" required placeholder="51.5246" />
+        </div>
+        <div class="form-group">
+          <label>Longitude *</label>
+          <input type="number" id="f-lng" step="0.0001" required placeholder="-0.1340" />
+        </div>
+        <div class="form-group">
+          <label>Price / week (£) *</label>
+          <input type="number" id="f-price" min="1" required placeholder="220" />
+        </div>
+        <div class="form-group">
+          <label>Price note</label>
+          <input type="text" id="f-priceNote" placeholder="e.g. £200–280/wk depending on room" />
+        </div>
+        <div class="form-group">
+          <label>Available From</label>
+          <input type="date" id="f-from" />
+        </div>
+        <div class="form-group">
+          <label>Available To</label>
+          <input type="date" id="f-to" />
+        </div>
+        <div class="form-group full">
+          <label>Website URL</label>
+          <input type="url" id="f-url" placeholder="https://…" />
+        </div>
+        <div class="form-group full">
+          <label>Shared notes</label>
+          <textarea id="f-notes" rows="2" placeholder="Visible to everyone…"></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" id="modalCancel">Cancel</button>
+        <button type="submit" class="btn-save" id="btnSave">Save Accommodation</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

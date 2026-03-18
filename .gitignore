@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Data (user-specific / runtime state)
+data/users/
+data/tube_cache.json
+
+# Scraped / import artefacts
+scraped_raw.json
+google-maps-scraper.exe
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Environment / secrets
+.env
+.env.*
