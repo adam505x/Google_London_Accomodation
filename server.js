@@ -12,6 +12,16 @@ const USERS_DIR  = path.join(__dirname, 'data', 'users');
 
 if (!fs.existsSync(USERS_DIR)) fs.mkdirSync(USERS_DIR, { recursive: true });
 
+// Seed accommodations.json from repo if volume is new/empty.
+// seed_accommodations.json lives at the project root (outside /data) so it's
+// always accessible even when a volume is mounted at /app/data.
+if (!fs.existsSync(DATA_FILE)) {
+  const seedPath = path.join(__dirname, 'seed_accommodations.json');
+  if (fs.existsSync(seedPath)) {
+    fs.writeFileSync(DATA_FILE, fs.readFileSync(seedPath));
+  }
+}
+
 app.use(cors());
 app.use(express.json());
 // NOTE: express.static is registered AFTER all API routes (see bottom of file)
