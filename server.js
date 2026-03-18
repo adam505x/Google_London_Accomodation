@@ -7,7 +7,7 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 const DATA_FILE  = path.join(__dirname, 'data', 'accommodations.json');
-const TUBE_CACHE = path.join(__dirname, 'data', 'tube_cache.json');
+const TUBE_CACHE = path.join(__dirname, 'tube_cache.json');
 const USERS_DIR  = path.join(__dirname, 'data', 'users');
 
 if (!fs.existsSync(USERS_DIR)) fs.mkdirSync(USERS_DIR, { recursive: true });

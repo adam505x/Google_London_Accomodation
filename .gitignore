@@ -3,6 +3,7 @@ node_modules/
 
 # Data (user-specific / runtime state)
 data/users/
+data/tube_cache.json
 
 # Scraped / import artefacts
 scraped_raw.json
